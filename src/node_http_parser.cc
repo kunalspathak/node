@@ -202,6 +202,13 @@ class Parser : public AsyncWrap {
     CHECK_LT(num_fields_, arraysize(fields_));
     CHECK_EQ(num_fields_, num_values_ + 1);
 
+    if (parser_.header_state) {
+      lowerCaseKnownFields_[num_fields_ - 1] = parser_.header_state - 1;
+      knownFields_[num_fields_ - 1] = parser_.traditional_case_http_headers ? parser_.header_state - 1 : 0;
+    } else {
+      lowerCaseKnownFields_[num_fields_ - 1] = 0;
+      knownFields_[num_fields_ - 1] = 0;
+    }
     fields_[num_fields_ - 1].Update(at, length);
 
     return 0;
@@ -650,7 +657,7 @@ class Parser : public AsyncWrap {
     do {
       size_t j = 0;
       while (i < num_values_ && j < arraysize(argv) / 2) {
-        argv[j * 2] = GetKnownHeader(fields_[i]);
+        argv[j * 2] = knownFields_[i] > 0 ? Local<Value>::Cast(Integer::New(env()->isolate(), knownFields_[i])) : fields_[i].ToString(env());
         argv[j * 2 + 1] = values_[i].ToString(env());
         i++;
         j++;
@@ -711,6 +718,8 @@ class Parser : public AsyncWrap {
 
 
   http_parser parser_;
+  unsigned int lowerCaseKnownFields_[32];  // known HTTP header fields lower case
+  unsigned int knownFields_[32];  // known HTTP header fields
   StringPtr fields_[32];  // header fields
   StringPtr values_[32];  // header values
   StringPtr url_;
