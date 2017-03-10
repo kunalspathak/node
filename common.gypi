@@ -33,6 +33,9 @@
 
     # Don't use ICU data file (icudtl.dat) from V8, we use our own.
     'icu_use_data_file_flag%': 0,
+    
+    # Whether to use PGO build or not
+    'pgo_build%': 1,
 
     'conditions': [
       ['OS == "win"', {
@@ -175,7 +178,7 @@
             ],
           },
           'VCLinkerTool': {
-            'LinkTimeCodeGeneration': 1, # link-time code generation
+            'LinkTimeCodeGeneration': '<(pgo_build)', # link-time code generation
             'OptimizeReferences': 2, # /OPT:REF
             'EnableCOMDATFolding': 2, # /OPT:ICF
             'LinkIncremental': 1, # disable incremental linking

@@ -344,6 +344,12 @@ parser.add_option('--with-etw',
     action='store_true',
     dest='with_etw',
     help='build with ETW (default is true on Windows)')
+    
+parser.add_option('--pgo_build',
+    action='store',
+    dest='pgo_build',
+    default='none',
+    help='Build PGO binaries (default is none means no PGO optimized binary)')    
 
 intl_optgroup.add_option('--with-intl',
     action='store',
@@ -1285,6 +1291,15 @@ def configure_inspector(o):
                        options.without_ssl)
   o['variables']['v8_enable_inspector'] = 0 if disable_inspector else 1
 
+def configure_pgo_build(o):
+  pgo_input = options.pgo_build.lower()
+  if pgo_input == 'pgi':
+    o['variables']['pgo_build'] = 2
+  elif pgo_input == 'pgo':
+    o['variables']['pgo_build'] = 3
+  else:
+    o['variables']['pgo_build'] = 1
+    
 output = {
   'variables': {},
   'include_dirs': [],
@@ -1316,6 +1331,7 @@ configure_openssl(output)
 configure_intl(output)
 configure_static(output)
 configure_inspector(output)
+configure_pgo_build(output)
 
 # variables should be a root level element,
 # move everything else to target_defaults

@@ -40,6 +40,7 @@ set configure_flags=
 set build_addons=
 set dll=
 set test_node_inspect=
+set pgo_build=none
 
 :next-arg
 if "%1"=="" goto args-done
@@ -85,6 +86,8 @@ if /i "%1"=="download-all"  set download_arg="--download=all"&goto arg-ok
 if /i "%1"=="ignore-flaky"  set test_args=%test_args% --flaky-tests=dontcare&goto arg-ok
 if /i "%1"=="enable-vtune"  set enable_vtune_arg=1&goto arg-ok
 if /i "%1"=="dll"           set dll=1&goto arg-ok
+if /i "%1"=="pgi"           set pgo_build=%1&goto arg-ok
+if /i "%1"=="pgo"           set pgo_build=%1&goto arg-ok
 
 echo Error: invalid command line option `%1`.
 exit /b 1
@@ -116,6 +119,7 @@ if defined release_urlbase set configure_flags=%configure_flags% --release-urlba
 if defined download_arg set configure_flags=%configure_flags% %download_arg%
 if defined enable_vtune_arg set configure_flags=%configure_flags% --enable-vtune-profiling
 if defined dll set configure_flags=%configure_flags% --shared
+set configure_flags=%configure_flags% --pgo_build=%pgo_build%
 
 if "%i18n_arg%"=="full-icu" set configure_flags=%configure_flags% --with-intl=full-icu
 if "%i18n_arg%"=="small-icu" set configure_flags=%configure_flags% --with-intl=small-icu
