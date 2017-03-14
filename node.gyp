@@ -261,6 +261,23 @@
 
 
       'conditions': [
+        ['OS=="win" and <(pgo_build) == 2' , {
+          'conditions': [
+            ['target_arch=="x64"', {
+              'msvs_postbuild' : 'call copy /Y "%VCINSTALLDIR%\\bin\\amd64\\pgort140.dll" <(PRODUCT_DIR)'
+             }
+            ],
+            ['target_arch=="ia32"', {
+              'msvs_postbuild' : 'copy /Y "%VCINSTALLDIR%/bin/pgort140.dll" <(PRODUCT_DIR)',
+             }
+            ],
+            ['target_arch=="arm"', {
+              'msvs_postbuild' : 'copy /Y "%VCINSTALLDIR%/bin/arm/pgort140.dll" <(PRODUCT_DIR)',
+             }
+            ]
+          ]
+         }
+        ],
         [ 'node_shared=="false"', {
           'msvs_settings': {
             'VCManifestTool': {
